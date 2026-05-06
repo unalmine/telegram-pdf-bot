@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "name": "PDF Ozetleyici",
+  "description": "No description provided",
+  "source_url": false,
+  "guid": "804b8cfdbeee995156258a5463a03c4d",
+  "tag_fg_color": "#ffffff",
+  "tag_bg_color": "#5bc0de",
+  "icon": "gear",
+  "exported_at": "2026-05-06T08:16:50Z",
+  "agents": [
+    {
+      "type": "Agents::PostAgent",
+      "name": "3- Python'a Gonder",
+      "disabled": false,
+      "guid": "10248561861cb69f64d48eebda932c53",
+      "options": {
+        "method": "post",
+        "payload": {
+          "chat_id": "{{chat_id}}",
+          "file_id": "{{file_id}}",
+          "webhook_url": "http://huginn:3000/users/1/web_requests/8/benim-gizli-sifrem"
+        },
+        "no_merge": "false",
+        "post_url": "http://pdf-processor:5000/process",
+        "emit_events": "false",
+        "output_mode": "clean",
+        "content_type": "json",
+        "expected_receive_period_in_days": "1"
+      },
+      "schedule": "never",
+      "keep_events_for": 0,
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::EventFormattingAgent",
+      "name": "4- Formatlayici",
+      "disabled": false,
+      "guid": "2de0e7cf77156ae709ce0596468e4af0",
+      "options": {
+        "mode": "clean",
+        "matchers": [],
+        "instructions": {
+          "text": "📄 *PDF Özeti:*\n\n{{summary}}",
+          "chat_id": "{{chat_id}}"
+        }
+      },
+      "keep_events_for": 0,
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::WebsiteAgent",
+      "name": "2- PDF Dinleyici",
+      "disabled": false,
+      "guid": "418f8db53e43ec181978053a9e6f95d5",
+      "options": {
+        "url": "https://api.telegram.org/botBURAYA_TELEGRAM_TOKEN_YAZILACAK/getUpdates",
+        "mode": "on_change",
+        "type": "json",
+        "extract": {
+          "chat_id": {
+            "path": "$.result[?(@.message.document)].message.chat.id"
+          },
+          "file_id": {
+            "path": "$.result[?(@.message.document)].message.document.file_id"
+          }
+        },
+        "expected_update_period_in_days": "2"
+      },
+      "schedule": "every_1m",
+      "keep_events_for": 0,
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::TelegramAgent",
+      "name": "5- Telegrama Ilet",
+      "disabled": false,
+      "guid": "64a98a788eae03f438d56e5cd329ca7f",
+      "options": {
+        "caption": "",
+        "chat_id": "{{chat_id}}",
+        "auth_token": "BURAYA_TELEGRAM_TOKEN_YAZILACAK",
+        "parse_mode": "",
+        "long_message": "",
+        "disable_notification": "",
+        "disable_web_page_preview": ""
+      },
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::WebhookAgent",
+      "name": "1- Ozet Karsilayici",
+      "disabled": false,
+      "guid": "a7968365853d56b614c7c77160683fd3",
+      "options": {
+        "secret": "benim-gizli-sifrem",
+        "payload_path": ".",
+        "expected_receive_period_in_days": "1"
+      },
+      "keep_events_for": 0
+    }
+  ],
+  "links": [
+    {
+      "source": 1,
+      "receiver": 3
+    },
+    {
+      "source": 2,
+      "receiver": 0
+    },
+    {
+      "source": 4,
+      "receiver": 1
+    }
+  ],
+  "control_links": []
+}

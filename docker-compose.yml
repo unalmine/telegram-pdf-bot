@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  huginn:
+    image: huginn/huginn
+    container_name: huginn
+    ports:
+      - "3000:3000"
+    environment:
+      - DOMAIN=localhost:3000
+    volumes:
+      - huginn_data:/var/lib/mysql
+    restart: always
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
+
+  pdf-processor:
+    build: ./processor
+    container_name: pdf-processor
+    environment:
+      - TELEGRAM_TOKEN=8394366079:AAGODoxcX-twt7ULmcqkokq_2YJNII5PQKE
+    ports:
+      - "5000:5000"
+    restart: always
+
+volumes:
+  huginn_data:
+  ollama_data:
